@@ -2,16 +2,11 @@ package main
 
 import (
 	"database/sql"
-	"fmt"
 	"log"
+	"net/http"
+	"os"
 	"reflect"
 	"strings"
-
-	// "encoding/json"
-	// "bytes"
-	// "net/http"
-	// "time"
-	"net/http"
 
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/labstack/echo"
@@ -34,13 +29,18 @@ const (
 )
 
 func main() {
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "8080"
+	}
+
 	e := echo.New()
 	e.GET("/recipes", GetAllRecipes)
 	e.GET("/recipes/:id", GetRecipe)
 	e.POST("/recipes", CreateRecipe)
 	e.PATCH("/recipes/:id", UpdateRecipe)
 	e.DELETE("/recipes/:id", DeleteRecipe)
-	e.Logger.Fatal(e.Start(":8080"))
+	e.Logger.Fatal(e.Start(":" + port))
 }
 
 var Update struct {
@@ -72,7 +72,6 @@ func UpdateRecipe(c echo.Context) error {
 	for i := 0; i < num; i++ {
 		field := items.Field(i)
 		value := values.FieldByName(field.Name).String()
-		fmt.Println(value)
 		if value == "" {
 			continue
 		}
@@ -275,19 +274,6 @@ func GetAllRecipes(c echo.Context) error {
 		outPut.Recipes = append(outPut.Recipes, Recipe{recipe.Id, recipe.Title, recipe.MakingTime, recipe.Serves, recipe.Ingredients, recipe.Cost})
 	}
 
-	// outPutJson, err := json.Marshal(outPut)
-	// if err != nil {
-	// 	fmt.Printf("json変換エラー", err)
-	// }
-
-	// var buf bytes.Buffer
-	// err = json.Indent(&buf, []byte(outPutJson), "", "  ")
-	// if err != nil {
-	// 	panic(err)
-	// }
-	// indentedJson := buf.String()
-
-	// fmt.Println(indentedJson)
 	return c.JSONPretty(
 		http.StatusOK,
 		outPut,
