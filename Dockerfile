@@ -1,13 +1,17 @@
-FROM golang:1.15.2-alpine
+FROM golang:1.16
 
-RUN apk update && apk add git
+ENV GO111MODULE=on
 
 RUN mkdir /go/src/app
+
+WORKDIR /go/src
+
+COPY go.mod go.sum ./
+
+RUN go mod download
 
 WORKDIR /go/src/app
 
 ADD . /go/src/app
 
-RUN go get -u github.com/oxequa/realize \
-  && go get github.com/go-sql-driver/mysql
-CMD ["realize", "start"]
+RUN go get github.com/go-sql-driver/mysql
