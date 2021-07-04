@@ -1,27 +1,21 @@
-FROM golang:1.16
+FROM golang:alpine as builder
 
-ENV GO111MODULE=on
+RUN apk update \
+  && apk add --no-cache git curl make gcc g++ \
+  && go get github.com/oxequa/realize
 
-RUN mkdir /go/src/app
-
-WORKDIR /go/src
-
-COPY go.mod go.sum ./
+WORKDIR /app
+COPY go.mod .
+COPY go.sum .
 
 RUN go mod download
+COPY . .
 
-WORKDIR /go/src/app
+RUN GOOS=linux GOARCH=amd64 go build -o /main
 
-ADD . /go/src/app
-
-RUN go get github.com/go-sql-driver/mysql
-
-RUN GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -ldflags="-w -s" -o /main ./cmd
-
-FROM alpine:3.12
+FROM alpine:3.9
 
 COPY --from=builder /main .
 
 ENV PORT=${PORT}
-
-ENTRYPOINT ["/main web"]
+ENTRYPOINT ["/main"]
