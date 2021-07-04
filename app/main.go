@@ -63,7 +63,8 @@ func UpdateRecipe(c echo.Context) error {
 	values := reflect.ValueOf(recipe)
 	num := values.NumField()
 
-	db, dbErr := sql.Open(DriverName, DataSourceName)
+	dbURL := os.Getenv("CLEARDB_DATABASE_URL")
+	db, dbErr := sql.Open("mysql", dbURL)
 	if dbErr != nil {
 		log.Print("error connecting to database:", dbErr)
 	}
@@ -112,7 +113,8 @@ func DeleteRecipe(c echo.Context) error {
 	id := c.Param("id")
 	dlMessage := new(DeleteMessage)
 
-	db, dbErr := sql.Open(DriverName, DataSourceName)
+	dbURL := os.Getenv("CLEARDB_DATABASE_URL")
+	db, dbErr := sql.Open("mysql", dbURL)
 	if dbErr != nil {
 		log.Print("error connecting to database:", dbErr)
 	}
@@ -178,7 +180,8 @@ func CreateRecipe(c echo.Context) error {
 		}
 	}
 
-	db, dbErr := sql.Open(DriverName, DataSourceName)
+	dbURL := os.Getenv("CLEARDB_DATABASE_URL")
+	db, dbErr := sql.Open("mysql", dbURL)
 	if dbErr != nil {
 		log.Print("error connecting to database:", dbErr)
 	}
@@ -214,7 +217,8 @@ type Get struct {
 
 func GetRecipe(c echo.Context) error {
 	id := c.Param("id")
-	db, dbErr := sql.Open(DriverName, DataSourceName)
+	dbURL := os.Getenv("CLEARDB_DATABASE_URL")
+	db, dbErr := sql.Open("mysql", dbURL)
 	if dbErr != nil {
 		log.Print("error connecting to database:", dbErr)
 	}
@@ -250,7 +254,8 @@ type GetAll struct {
 }
 
 func GetAllRecipes(c echo.Context) error {
-	db, dbErr := sql.Open(DriverName, DataSourceName)
+	dbURL := os.Getenv("CLEARDB_DATABASE_URL")
+	db, dbErr := sql.Open("mysql", dbURL)
 	if dbErr != nil {
 		log.Print("error connecting to database:", dbErr)
 	}
