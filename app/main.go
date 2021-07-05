@@ -139,7 +139,7 @@ func DeleteRecipe(c echo.Context) error {
 	if err == sql.ErrNoRows {
 		dlMessage.Message = "No Recipe found"
 		return c.JSONPretty(
-			http.StatusExpectationFailed,
+			http.StatusOK,
 			dlMessage,
 			"  ",
 		)
@@ -188,7 +188,7 @@ func CreateRecipe(c echo.Context) error {
 		value := values.FieldByName(field.Name).String()
 		if value == "" {
 			return c.JSONPretty(
-				http.StatusExpectationFailed,
+				http.StatusOK,
 				fail,
 				"  ",
 			)
