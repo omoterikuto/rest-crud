@@ -26,7 +26,7 @@ const (
 	DriverName = "mysql"
 	// DataSourceName user:password@tcp(container-name:port)/dbname
 	DataSourceName       = "root:golang@tcp(mysql-container:3306)/rest_crud"
-	HerokuDataSourceName = "b441499201432f:a46600a6@tcp(us-cdbr-east-04.cleardb.com:3306)/rest_crud?parseTime=true"
+	HerokuDataSourceName = "b441499201432f:a46600a6@tcp(us-cdbr-east-04.cleardb.com:3306)/heroku_4ea22cfda9db2e9?parseTime=true"
 )
 
 func main() {
