@@ -121,8 +121,15 @@ func DeleteRecipe(c echo.Context) error {
 	id := c.Param("id")
 	dlMessage := new(DeleteMessage)
 
-	dbURL := os.Getenv("CLEARDB_DATABASE_URL")
-	db, dbErr := sql.Open("mysql", dbURL)
+	var datasource string
+	if os.Getenv("DATABASE_URL") != "" {
+		// Heroku用
+		datasource = HerokuDataSourceName
+	} else {
+		// ローカル用
+		datasource = DataSourceName
+	}
+	db, dbErr := sql.Open("mysql", datasource)
 	if dbErr != nil {
 		log.Print("error connecting to database:", dbErr)
 	}
@@ -188,8 +195,15 @@ func CreateRecipe(c echo.Context) error {
 		}
 	}
 
-	dbURL := os.Getenv("CLEARDB_DATABASE_URL")
-	db, dbErr := sql.Open("mysql", dbURL)
+	var datasource string
+	if os.Getenv("DATABASE_URL") != "" {
+		// Heroku用
+		datasource = HerokuDataSourceName
+	} else {
+		// ローカル用
+		datasource = DataSourceName
+	}
+	db, dbErr := sql.Open("mysql", datasource)
 	if dbErr != nil {
 		log.Print("error connecting to database:", dbErr)
 	}
@@ -225,8 +239,16 @@ type Get struct {
 
 func GetRecipe(c echo.Context) error {
 	id := c.Param("id")
-	dbURL := os.Getenv("CLEARDB_DATABASE_URL")
-	db, dbErr := sql.Open("mysql", dbURL)
+
+	var datasource string
+	if os.Getenv("DATABASE_URL") != "" {
+		// Heroku用
+		datasource = HerokuDataSourceName
+	} else {
+		// ローカル用
+		datasource = DataSourceName
+	}
+	db, dbErr := sql.Open("mysql", datasource)
 	if dbErr != nil {
 		log.Print("error connecting to database:", dbErr)
 	}
@@ -262,12 +284,20 @@ type GetAll struct {
 }
 
 func GetAllRecipes(c echo.Context) error {
-	dbURL := os.Getenv("CLEARDB_DATABASE_URL")
-	db, dbErr := sql.Open("mysql", dbURL)
+	var datasource string
+	if os.Getenv("DATABASE_URL") != "" {
+		// Heroku用
+		datasource = HerokuDataSourceName
+	} else {
+		// ローカル用
+		datasource = DataSourceName
+	}
+	db, dbErr := sql.Open("mysql", datasource)
 	if dbErr != nil {
 		log.Print("error connecting to database:", dbErr)
 	}
 	defer db.Close()
+
 	rows, queryErr := db.Query("SELECT id, title, making_time, serves, ingredients, cost FROM recipes")
 	if queryErr != nil {
 		log.Print("query error :", queryErr)
