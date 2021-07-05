@@ -18,7 +18,7 @@ type Recipe struct {
 	MakingTime  string `json:"making_time"`
 	Serves      string `json:"serves"`
 	Ingredients string `json:"ingredients"`
-	Cost        string `json:"cost"`
+	Cost        int    `json:"cost"`
 }
 
 const (
@@ -49,7 +49,7 @@ var Update struct {
 	MakingTime  string `json:"making_time"`
 	Serves      string
 	Ingredients string
-	Cost        string
+	Cost        int
 }
 
 func UpdateRecipe(c echo.Context) error {
@@ -161,7 +161,7 @@ var ReceiveJson struct {
 	MakingTime  string `json:"making_time"`
 	Serves      string `json:"serves"`
 	Ingredients string `json:"ingredients"`
-	Cost        string `json:"cost"`
+	Cost        int    `json:"cost"`
 }
 
 type CreateFailed struct {
@@ -171,9 +171,6 @@ type CreateFailed struct {
 
 func CreateRecipe(c echo.Context) error {
 	recipe := ReceiveJson
-	fail := new(CreateFailed)
-	fail.Message = "Recipe creation failed!"
-	fail.Required = "title, making_time, serves, ingredients, cost"
 
 	if bindErr := c.Bind(&recipe); bindErr != nil {
 		log.Print("error bind to struct:", bindErr)
@@ -187,6 +184,9 @@ func CreateRecipe(c echo.Context) error {
 		field := items.Field(i)
 		value := values.FieldByName(field.Name).String()
 		if value == "" {
+			fail := new(CreateFailed)
+			fail.Message = "Recipe creation failed!"
+			fail.Required = "title, making_time, serves, ingredients, cost"
 			return c.JSONPretty(
 				http.StatusOK,
 				fail,
