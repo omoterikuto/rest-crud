@@ -25,7 +25,8 @@ const (
 	// DriverName ドライバ名(mysql固定)
 	DriverName = "mysql"
 	// DataSourceName user:password@tcp(container-name:port)/dbname
-	DataSourceName = "root:golang@tcp(mysql-container:3306)/rest_crud"
+	DataSourceName       = "root:golang@tcp(mysql-container:3306)/rest_crud"
+	HerokuDataSourceName = "38faf8fefeaaef:dfefe44@tcp(us-cdbr-east-04.cleardb.com:3306)/rest_crud?parseTime=true"
 )
 
 func main() {
@@ -63,8 +64,15 @@ func UpdateRecipe(c echo.Context) error {
 	values := reflect.ValueOf(recipe)
 	num := values.NumField()
 
-	dbURL := os.Getenv("CLEARDB_DATABASE_URL")
-	db, dbErr := sql.Open("mysql", dbURL)
+	var datasource string
+	if os.Getenv("DATABASE_URL") != "" {
+		// Heroku用
+		datasource = HerokuDataSourceName
+	} else {
+		// ローカル用
+		datasource = DataSourceName
+	}
+	db, dbErr := sql.Open("mysql", datasource)
 	if dbErr != nil {
 		log.Print("error connecting to database:", dbErr)
 	}
